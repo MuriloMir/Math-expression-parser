@@ -1,9 +1,7 @@
 # math-expression-parser
 What we have here is an algorithm that is able to fully interpret and solve any mathematical expression. It works by parsing the mathematical expression which is received as a string, it does it recursively.
 
-
 It first solves all trigonometric functions, then it solves all logarithmic functions, then it solves all powers and roots, then it solves all products and quotients and finally it solves all sums and differences.
-
 
 You just need to make sure the expression was typed correctly, these are the rules:
 
@@ -16,7 +14,6 @@ You just need to make sure the expression was typed correctly, these are the rul
 4- roots must be written using the r operator, as in 8r3, which means the cubic root of 8.
 
 5- you can use parentheses as you wish, just make sure you don't forget to open or close a pair of parentheses, as in ((2 + x), which is missing the closing parentheses.
-
 
 Compile it with dmd mathexpressionparser.d -m64 -i -J. -O.
 Then just run it and play with it, if you do anything that results in NaN (not-a-number) then it will display a message saying you've mistyped something.
