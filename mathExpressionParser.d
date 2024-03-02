@@ -670,5 +670,5 @@ void main()
     // if the expression was correct
     else
         // print the value, with 10 decimal places
-        writefln("%.10f", result);
+        writefln("Result: %.10f", result);
 }
