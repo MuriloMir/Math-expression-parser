@@ -20,9 +20,9 @@ You just need to make sure the expression was typed correctly, these are the rul
 Compile it with dmd mathexpressionparser.d -m64 -O. Then just run it and play with it, if you do anything that results in NaN (not-a-number) then it will display a message saying you've mistyped something.
 
 Here are some examples:
-sec(sin(3.0) * cos(x) / tan(2.0 * x - 6)) - csc(x) + cot((x - 2.0) * 3.0)
-(x * 100.0 - 550.0)!
-3.0 * log(2.0, x) - 4.5
-3.0 ^ x - e / (x ^ e)
-(8.0 - x + pi) * x - ((x + 7.0) * 2.0)
-(-x)r2.0
+1: sec(sin(3.0) * cos(x) / tan(2.0 * x - 6)) - csc(x) + cot((x - 2.0) * 3.0).
+2: (x * 100.0 - 550.0)!.
+3: 3.0 * log(2.0, x) - 4.5.
+4: 3.0 ^ x - e / (x ^ e).
+5: (8.0 - x + pi) * x - ((x + 7.0) * 2.0).
+6: (-x)r2.0.
