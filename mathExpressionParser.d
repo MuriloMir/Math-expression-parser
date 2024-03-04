@@ -1,4 +1,8 @@
-// This code implements a math expression parser, meaning an interpreter which can solve any mathematical expression with 10 digits of precision.
+/*
+    This code implements a math expression parser, meaning an interpreter which can solve any mathematical expression with 10 digits of precision.
+    It works recursively by solving all inner parenthesis, however it turns them to brackets once they are fully solved, this will prevent bugs.
+    Meaning an expression like "(4 + 2) - 3" is first turned into "[6] - 3" and then turned into "3".
+*/
 
 import std.algorithm.searching : canFind, countUntil;
 import std.array : replace, split;
