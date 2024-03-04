@@ -12,7 +12,7 @@ string replaceEuler(string mathExpression)
 {
     // use a loop to check all characters of the expression to see if any of them is an 'e'
     for (int i = 0; i < mathExpression.length; i++)
-        // if it is not the 'sec()' function instead
+        // if it is not the 'sec()' function instead (it has the letter 'e' in it)
         if ((i > 0 && mathExpression[i] == 'e' && mathExpression[i - 1] != 's') || (i < mathExpression.length - 1 && mathExpression[i] == 'e' && mathExpression[i + 1] != 'c'))
             // replace it in the expression with the number value
             mathExpression = mathExpression[0 .. i] ~ "2.7182818285" ~ mathExpression[i + 1 .. $];
@@ -43,7 +43,7 @@ string calculateLogs(string mathExpression)
         while (mathExpression[++i] != ',')
         {}
 
-        // evaluate it in case there is another expression inside the function, as in "log(x + 1, 10)", we need to evaluate it first, with 10 decimal places
+        // evaluate it in case there is another expression inside the function, as in "log(x + 1.0, 10.0)", we need to evaluate it first, with 10 decimals
         firstNumber = format("%.10f", evaluate(mathExpression[begin .. i]));
         // start with 'end' in the position next to 'i', we will move the parser until we find the final parenthesis
         end = i + 1;
@@ -52,7 +52,7 @@ string calculateLogs(string mathExpression)
         while (mathExpression[end] != ')' || (end < mathExpression.length - 1 && mathExpression[end + 1] == ')'))
             end++;
 
-        // evaluate it in case there is another expression inside the function, as in "log(2, x + 1)", we need to evaluate it first, with 10 decimal places
+        // evaluate it in case there is another expression inside the function, as in "log(2.0, x + 1.0)", we need to evaluate it first, with 10 decimals
         secondNumber = format("%.10f", evaluate(mathExpression[i + 1 .. end]));
 
         // if either number is negative
@@ -69,7 +69,7 @@ string calculateLogs(string mathExpression)
             // return it
             return "NaN";
 
-        // place the result in its place inside the expression, with 10 decimal places
+        // place the result in its place inside the expression, with 10 decimals
         mathExpression = mathExpression[0 .. begin - 4] ~ format("%.10f", partialResult) ~ mathExpression[end + 1 .. $];
     }
 
@@ -95,7 +95,7 @@ string solveAnyTrig(string mathExpression, string formula)
     while (mathExpression[++i] != ']')
     {}
 
-    // evaluate it, in case there is another expression inside the function, as in "sin[x + 4 / 5]", we need to evaluate it first, with 10 decimal places
+    // evaluate it, in case there is another expression inside the function, as in "sin[x + 4 / 5]", we need to evaluate it first, with 10 decimals
     number = format("%.10f", evaluate(mathExpression[begin .. i]));
 
     // here we calculate the value according to the formula
@@ -142,7 +142,7 @@ string solveAnyTrig(string mathExpression, string formula)
         // return it
         return "NaN";
 
-    // replace it with the result in the original expression, with 10 decimal places
+    // replace it with the result in the original expression, with 10 decimals
     mathExpression = mathExpression[0 .. begin - 4] ~ format("%.10f", partialResult) ~ mathExpression[i + 1 .. $];
 
     // return the new version of the expression with the trig function solved
@@ -181,7 +181,7 @@ string factorial(string number)
         // return NaN because in this case we can't calculate the factorial
         return "NaN";
     else
-        // convert the string to 'real' and then convert it to 'ulong'
+        // convert the string to 'real' and then convert it to 'ulong', otherwise the '.' will trigger an error during the conversion
         result = to!ulong(to!real(number));
 
     // if the number is 0
@@ -218,7 +218,7 @@ string calculateFactorials(string mathExpression)
     begin++;
     // get the number out of the expression
     number = mathExpression[begin .. end];
-    // replace any possible '[' and ']' which may have appeared during the calculations
+    // replace any possible "[]" which may have appeared during the calculations
     number = replace(number, "[", ""), number = replace(number, "]", "");
     // store the partial result in this variable
     string partialResult = factorial(number);
@@ -232,12 +232,13 @@ string calculateFactorials(string mathExpression)
     return mathExpression[0 .. begin] ~ partialResult ~ (end < mathExpression.length - 1 ? mathExpression[end + 1 .. $] : "");
 }
 
+// REVIEWED UNTIL HERE
 // this function will calculate all powers and roots
 string calculatePowersAndRoots(string mathExpression)
 {
     // this variable will store the result of the calculations
     real partialResult;
-    // these strings will contain the radix and the exponent
+    // these strings will contain the base and the exponent
     string firstNumber, secondNumber;
     // these variables will be used to let the parser move and find the positions of the numbers
     int i, j, begin, end;
@@ -264,7 +265,7 @@ string calculatePowersAndRoots(string mathExpression)
                 begin = j + 1;
                 // select the first number, it will be from 'begin' to 'i'
                 firstNumber = mathExpression[begin .. i];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 firstNumber = replace(firstNumber, "[", ""), firstNumber = replace(firstNumber, "]", "");
                 // set 'j' to be right after 'i', now we will start parsing until we find the next operation which is neither a power nor a root
                 j = i + 1;
@@ -281,7 +282,7 @@ string calculatePowersAndRoots(string mathExpression)
                 end = j;
                 // select the second number, it goes from 'i + 1' until 'end'
                 secondNumber = mathExpression[i + 1 .. end];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 secondNumber = replace(secondNumber, "[", ""), secondNumber = replace(secondNumber, "]", "");
 
                 // if we have to do a power
@@ -300,6 +301,7 @@ string calculatePowersAndRoots(string mathExpression)
                         else
                             // return NaN
                             return "NaN";
+                    // if the radicand is non-negative
                     else
                         // calculate the result and store it inside 'partialResult'
                         partialResult = to!real(firstNumber) ^^ (1.0 / to!real(secondNumber));
@@ -315,11 +317,11 @@ string calculatePowersAndRoots(string mathExpression)
 
                 // if the result will be inserted in the middle of the expression
                 if (end < mathExpression.length)
-                    // concatenate the expression to form the final result, with 10 decimal places
+                    // concatenate the expression to form the final result, with 10 decimals
                     mathExpression = mathExpression[0 .. begin] ~ format("%.10f", partialResult) ~ mathExpression[end .. $];
                 // if the result will be inserted in the end of the expression
                 else
-                    // concatenate the expression to form the final result, with 10 decimal places
+                    // concatenate the expression to form the final result, with 10 decimals
                     mathExpression = mathExpression[0 .. begin] ~ format("%.10f", partialResult);
             }
 
@@ -344,7 +346,7 @@ string calculateProductsAndQuotients(string mathExpression)
             // if it is a product or a quotient
             if (mathExpression[i] == '*' || mathExpression[i] == '/')
             {
-                // start with these variables equal to each other, here we will move the parser to determine the beginning of the first number
+                // start with 'j' equal to 'i', here we will move the parser to determine the beginning of the first number
                 j = i;
 
                 // use a loop to keep stepping back
@@ -356,9 +358,9 @@ string calculateProductsAndQuotients(string mathExpression)
 
                 // add 1 to make up for the previous loop, it decremented once more than necessary
                 begin = j + 1;
-                // select the first number from the expression
+                // select the first number from the expression, it starts at 'begin' and goes until 'i'
                 firstNumber = mathExpression[begin .. i];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 firstNumber = replace(firstNumber, "[", ""), firstNumber = replace(firstNumber, "]", "");
                 // start with 'j' right after 'i', here we will move the parser to determine the end of the second number
                 j = i + 1;
@@ -373,22 +375,15 @@ string calculateProductsAndQuotients(string mathExpression)
 
                 // set 'end' equals 'j'
                 end = j;
-                // select the second number, it starts at 'i + 1' and goes until 'end'
+                // select the second number, it starts at 'i' + 1 and goes until 'end'
                 secondNumber = mathExpression[i + 1 .. end];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 secondNumber = replace(secondNumber, "[", ""), secondNumber = replace(secondNumber, "]", "");
 
                 // if we are dealing with a product
                 if (mathExpression[i] == '*')
-                {
                     // calculate it
                     partialResult = to!real(firstNumber) * to!real(secondNumber);
-
-                    // if a NaN was produced above
-                    if (partialResult == real.nan)
-                        // return it
-                        return "NaN";
-                }
                 // if we are dealing with a quotient
                 else
                     // in case you are dividing by 0, which is impossible
@@ -407,11 +402,11 @@ string calculateProductsAndQuotients(string mathExpression)
 
                 // if we have to insert the result in the middle of the expression
                 if (end < mathExpression.length)
-                    // concatenate to form the final expression, with 10 decimal places
+                    // concatenate to form the final expression, with 10 decimals
                     mathExpression = mathExpression[0 .. begin] ~ format("%.10f", partialResult) ~ mathExpression[end .. $];
                 // if we have to insert the result in the end of the expression
                 else
-                    // concatenate to form the final expression, with 10 decimal places
+                    // concatenate to form the final expression, with 10 decimals
                     mathExpression = mathExpression[0 .. begin] ~ format("%.10f", partialResult);
             }
 
@@ -427,9 +422,9 @@ string calculateSumsAndDifferences(string mathExpression)
     // these variables will contain the operands
     string firstNumber, secondNumber;
 
-    // if it is something like "-[-2.3] or "-[-1.3] + 2.0"
+    // if it is something like "-[-2.3]" or "-[-1.3] + 2.0"
     if (mathExpression.length > 4 && mathExpression[0 .. 3] == "-[-")
-        // if it is something exactly like "-[-2.3]"
+        // if it is something like "-[-2.3]"
         if (countUntil(mathExpression, ']') == mathExpression.length - 1)
             // return the expression without the "[]" and the doubled '-' signs
             return mathExpression[3 .. $ - 1];
@@ -458,7 +453,7 @@ string calculateSumsAndDifferences(string mathExpression)
             {
                 // select the first number
                 firstNumber = mathExpression[0 .. i];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 firstNumber = replace(firstNumber, "[", ""), firstNumber = replace(firstNumber, "]", "");
                 // replace all "+-" and all "--" which may have appeared during the calculations
                 firstNumber = replace(firstNumber, "+-", "-"), firstNumber = replace(firstNumber, "--", "");
@@ -467,7 +462,7 @@ string calculateSumsAndDifferences(string mathExpression)
 
                 // use a loop to move the parser until we find the second number
                 while (j++ < mathExpression.length - 1)
-                    // if we reach another operation and there is no '[' in front of it (e.g. "4 + [-3]")
+                    // if we reach another operation and there is no '[' in front of it (to prevent problems with cases like "4 + [-3]")
                     if ((mathExpression[j] == '+' || mathExpression[j] == '-') && mathExpression[j - 1] != '[')
                         // stop the loop, we've gotten where we want to be
                         break;
@@ -476,7 +471,7 @@ string calculateSumsAndDifferences(string mathExpression)
                 end = j;
                 // select the second number from the expression
                 secondNumber = mathExpression[i + 1 .. end];
-                // replace any possible '[' and ']' which may have appeared during the calculations
+                // replace any possible "[]" which may have appeared during the calculations
                 secondNumber = replace(secondNumber, "[", ""), secondNumber = replace(secondNumber, "]", "");
 
                 // if we are dealing with a sum
@@ -495,11 +490,11 @@ string calculateSumsAndDifferences(string mathExpression)
 
                 // if we are inserting the result in the middle of the expression
                 if (end < mathExpression.length)
-                    // concatenate to form the final expression, with 10 decimal places
+                    // concatenate to form the final expression, with 10 decimals
                     mathExpression = format("%.10f", partialResult) ~ mathExpression[end .. $];
                 // if we are inserting the result in the end of the expression
                 else
-                    // form the final expression, with 10 decimal places
+                    // form the final expression, with 10 decimals
                     mathExpression = format("%.10f", partialResult);
 
                 // end the loop, we've gotten where we wanted to be
@@ -519,7 +514,7 @@ real evaluate(string expressionPiece)
     // this variable will contain the result of what is inside the parenthesis
     real pieceResult;
 
-    // we first calculate the logarithms, they work like a function in the form "log(2, 8)", we must calculate them first to prevent bugs,
+    // we first calculate the logarithms, they work like a function in the form "log(2.0, 8.0)", we must calculate them first to prevent bugs,
     // calculate all logarithmic functions with the 'calculateLogs()' function created above
     expressionPiece = calculateLogs(expressionPiece);
 
@@ -553,9 +548,9 @@ real evaluate(string expressionPiece)
             // return it
             return real.nan;
 
-        // replace this value inside the expression, with 10 decimal places
+        // replace this value inside the expression, with 10 decimals
         expressionPiece = expressionPiece[0 .. i] ~ format("[%.10f]", pieceResult) ~ expressionPiece[j + 1 .. $];
-        // remove any possible "[[" and "]]" that may have appeared during the calculation
+        // remove any possible "[[" and "]]" that may have appeared during the calculations
         expressionPiece = replace(expressionPiece, "[[", "["), expressionPiece = replace(expressionPiece, "]]", "]");
     }
 
@@ -572,7 +567,7 @@ real evaluate(string expressionPiece)
         // return it
         return real.nan;
 
-    // remove all doubled '-' signs and then remove all adjacent '+' and '-' signs that may have appeared during the calculations
+    // remove all "--" and then remove all "+-" signs that may have appeared during the calculations
     expressionPiece = replace(expressionPiece, "--", "+"), expressionPiece = replace(expressionPiece, "+-", "-");
 
     // use a loop to keep calculating all factorials
@@ -603,7 +598,7 @@ real evaluate(string expressionPiece)
         // return it
         return real.nan;
 
-    // remove all doubled '-' signs and then remove all adjacent '+' and '-' signs that may have appeared during the calculations
+    // remove all "--" and then remove all "+-" signs that may have appeared during the calculations
     expressionPiece = replace(expressionPiece, "--", "+"), expressionPiece = replace(expressionPiece, "+-", "-");
 
     // calculate all sums and differences with the 'calculateSumsAndDifferences()' function created above
@@ -614,7 +609,7 @@ real evaluate(string expressionPiece)
         // return it
         return real.nan;
 
-    // replace any possible '[' and ']' which may have appeared during the calculations
+    // replace all "[]" which may have appeared during the calculations
     expressionPiece = replace(expressionPiece, "[", ""), expressionPiece = replace(expressionPiece, "]", "");
 
     // if the expression is something like "-0.0"
@@ -646,16 +641,16 @@ void main()
 
     // if the x value is negative
     if (xValue < 0.0)
-        // replace all x variables with the x value, with 10 decimal places, but put it between parenthesis, because of the '-' sign
+        // replace all x variables with the x value, with 10 decimal places, but put it between parenthesis, because of the '-' sign (it prevents bugs)
         expression = replace(expression, "x", format("(%.10f)", xValue));
     // if the x value is non-negative
     else
         // replace all x variables with the x value, with 10 decimal places
         expression = replace(expression, "x", format("%.10f", xValue));
 
-    // remove all spaces and then remove all doubled '+' and '-' signs
+    // remove all spaces and then remove all "++" and "--"
     expression = replace(expression, " ", ""), expression = replace(expression, "++", "+"), expression = replace(expression, "--", "+");
-    // remove all adjacent '+' and '-' signs
+    // remove all "+-" and "-+"
     expression = replace(expression, "+-", "-"), expression = replace(expression, "-+", "-");
     // replace the constant of pi and then the constant of Euler, we use a separate function for Euler since it is more difficult than replacing pi
     expression = replace(expression, "pi", "3.1415926536"), expression = replaceEuler(expression);
@@ -669,6 +664,6 @@ void main()
         writeln("Error, the expression wasn't typed correctly.");
     // if the expression was correct
     else
-        // print the value, with 10 decimal places
+        // print the value, with 10 decimals
         writefln("Result: %.10f", result);
 }
