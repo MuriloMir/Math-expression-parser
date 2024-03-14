@@ -17,7 +17,7 @@ You just need to make sure the expression was typed correctly, these are the rul
 
 6- it may work most times if you type values as integers, such as 3, but it is safer to always type them as floats, such as 3.0, just in case.
 
-Compile it with dmd mathexpressionparser.d -m64 -O. Then just run it and play with it, if you do anything that results in NaN (not-a-number) then it will display a message saying you've mistyped something.
+Compile it with "dmd mathexpressionparser.d -m64 -O -g". Then just run it and play with it, if you do anything that results in NaN (not-a-number) then it will display a message saying you've mistyped something.
 
 Here are some examples:
 
