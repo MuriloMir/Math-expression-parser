@@ -3,6 +3,8 @@ What we have here is an algorithm that is able to fully interpret and solve any 
 
 It first organizes the expression by removing spaces, doubled signs (e.g. "--") and also by replacing the constants of euler and pi. Then it solves all logarithms, then it finds all nested parenthesis and solves them recursively, then it solves all trigonometric functions, then it solves all factorials, then it solves all powers and roots, then it solves all products and quotients and finally it solves all sums and differences.
 
+You can compile the code with the DMD compiler by typing "dmd source.d -m64 -i -J. -O -g".
+
 You just need to make sure the expression was typed correctly, these are the rules:
 
 1- trigs and logs must be written in lower case, as in log(2.0, 10.0), in which 2.0 is the base, or as in sin(4.5), in which 4.5 is in degrees, not radians.
