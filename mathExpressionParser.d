@@ -626,6 +626,7 @@ real evaluate(string expressionPiece)
         return to!real(expressionPiece);
 }
 
+// start the software
 void main()
 {
     // this string will hold the expression
