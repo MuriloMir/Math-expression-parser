@@ -4,6 +4,7 @@
     Meaning an expression like "(4 + 2) - 3" is first turned into "[6] - 3" and then turned into "3".
 */
 
+// import all the tools we need
 import std.algorithm.searching : canFind, countUntil;
 import std.array : replace, split;
 import std.conv : to;
