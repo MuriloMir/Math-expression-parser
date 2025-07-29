@@ -237,7 +237,6 @@ string calculateFactorials(string mathExpression)
     return mathExpression[0 .. begin] ~ partialResult ~ (end < mathExpression.length - 1 ? mathExpression[end + 1 .. $] : "");
 }
 
-// REVIEWED UNTIL HERE
 // this function will calculate all powers and roots
 string calculatePowersAndRoots(string mathExpression)
 {
@@ -277,7 +276,7 @@ string calculatePowersAndRoots(string mathExpression)
 
                 // use a loop to search until we find an operator or the end of the expression
                 while (j++ < mathExpression.length - 1)
-                    // if it finds the sign of an expression
+                    // if it finds the sign of an expression, we have to check cases like "2 ^ [-3]"
                     if ((mathExpression[j] == '+' || mathExpression[j] == '-' || mathExpression[j] == '*' || mathExpression[j] == '/') &&
                         mathExpression[j - 1] != '[')
                         // end the loop, we've gotten where we needed to be
@@ -304,7 +303,7 @@ string calculatePowersAndRoots(string mathExpression)
                             partialResult = -(to!real(firstNumber[1 .. $]) ^^ (1.0 / to!real(secondNumber)));
                         // if the index is even then we can't calculate it, there is no square root of a negative number
                         else
-                            // return NaN
+                            // return it
                             return "NaN";
                     // if the radicand is non-negative
                     else
@@ -312,10 +311,10 @@ string calculatePowersAndRoots(string mathExpression)
                         partialResult = to!real(firstNumber) ^^ (1.0 / to!real(secondNumber));
                 // if the index is not a positive integer, in this case we won't accept it
                 else
-                    // return NaN
+                    // return it
                     return "NaN";
 
-                // if a NaN was produced above
+                // if a NaN was produced accidentally above while calculating a normal root
                 if (partialResult == real.nan)
                     // return it
                     return "NaN";
@@ -370,7 +369,7 @@ string calculateProductsAndQuotients(string mathExpression)
                 // start with 'j' right after 'i', here we will move the parser to determine the end of the second number
                 j = i + 1;
 
-                // use a loop to keep moving 'j' forward
+                // use a loop to keep moving 'j' forward without crossing the array bound
                 while (j++ < mathExpression.length - 1)
                     // if it finds the sign of an operation, we have to check cases like "2 * [-3]"
                     if ((mathExpression[j] == '+' || mathExpression[j] == '-' || mathExpression[j] == '*' || mathExpression[j] == '/') &&
@@ -378,7 +377,7 @@ string calculateProductsAndQuotients(string mathExpression)
                         // it ends the loop, we've gotten where we wanted to be
                         break;
 
-                // set 'end' equals 'j'
+                // set 'end' equal to 'j'
                 end = j;
                 // select the second number, it starts at 'i' + 1 and goes until 'end'
                 secondNumber = mathExpression[i + 1 .. end];
@@ -429,13 +428,13 @@ string calculateSumsAndDifferences(string mathExpression)
 
     // if it is something like "-[-2.3]" or "-[-1.3] + 2.0"
     if (mathExpression.length > 4 && mathExpression[0 .. 3] == "-[-")
-        // if it is something like "-[-2.3]"
+        // if it is something like "-[-2.3]", notice we use 'countUntil()' to make sure it finds the very first ']', in case there is more than 1
         if (countUntil(mathExpression, ']') == mathExpression.length - 1)
             // return the expression without the "[]" and the doubled '-' signs
             return mathExpression[3 .. $ - 1];
         // if it is something more elaborated, like "-[-1.3] + 2.0"
         else
-            // remove the first "[]", remove the doubled '-' and then append the rest of the expression
+            // remove the first "[]" and the doubled '-', then append the rest of the expression
             mathExpression = mathExpression[3 .. countUntil(mathExpression, ']')] ~ mathExpression[countUntil(mathExpression, ']') + 1 .. $];
 
     // use a loop to keep checking the expression for sums and differences, we have to check cases like "-5 + x", which start with the '-' sign,
@@ -460,8 +459,6 @@ string calculateSumsAndDifferences(string mathExpression)
                 firstNumber = mathExpression[0 .. i];
                 // replace any possible "[]" which may have appeared during the calculations
                 firstNumber = replace(firstNumber, "[", ""), firstNumber = replace(firstNumber, "]", "");
-                // replace all "+-" and all "--" which may have appeared during the calculations
-                firstNumber = replace(firstNumber, "+-", "-"), firstNumber = replace(firstNumber, "--", "");
                 // start with 'j' equal to 'i', this will be necessary to find the second number
                 j = i;
 
@@ -519,8 +516,7 @@ real evaluate(string expressionPiece)
     // this variable will contain the result of what is inside the parenthesis
     real pieceResult;
 
-    // we first calculate the logarithms, they work like a function in the form "log(2.0, 8.0)", we must calculate them first to prevent bugs,
-    // calculate all logarithmic functions with the 'calculateLogs()' function created above
+    // calculate all logarithms with the 'calculateLogs()' function, these come 1st to prevent bugs, they're like a function in the form "log(2.0, 8.0)"
     expressionPiece = calculateLogs(expressionPiece);
 
     // if a NaN was produced above
@@ -528,7 +524,7 @@ real evaluate(string expressionPiece)
         // return it
         return real.nan;
 
-    // use a loop to keep solving all parenthesis, this has the side effect of removing all parenthesis and turning them into brackets
+    // use a loop to keep solving all parenthesis, this has the side effect of to remove all parenthesis and to turn them into brackets
     while (canFind(expressionPiece, '(') && canFind(expressionPiece, ')'))
     {
         // find the first opening parenthesis, we cast it into 'int' because the 'countUntil()' function returns a 'long'
@@ -542,10 +538,10 @@ real evaluate(string expressionPiece)
                 i = j;
             // if we find the first closing parenthesis
             else if (expressionPiece[j] == ')')
-                // stop the loop, we already have what we wanted
+                // stop the loop, we already have what we want
                 break;
 
-        // evaluate recursively what is in between these parenthesis
+        // evaluate recursively what is in between these parenthesis and store it in 'pieceResult'
         pieceResult = evaluate(expressionPiece[i + 1 .. j]);
 
         // if a NaN was produced above
@@ -561,19 +557,16 @@ real evaluate(string expressionPiece)
 
     // if there is an extra parenthesis that you've mistyped
     if (canFind(expressionPiece, '(') || canFind(expressionPiece, ')'))
-        // return NaN
+        // return NaN, this expression can't be solved
         return real.nan;
 
-    // from now on there are no more "()", only "[]", we calculate all trigonometric functions with the 'calculateTrigs()' function created above
+    // from now on there are no more "()", only "[]", we calculate all trigonometric functions with the 'calculateTrigs()' function
     expressionPiece = calculateTrigs(expressionPiece);
 
     // if a NaN was produced above
     if (expressionPiece == "NaN")
         // return it
         return real.nan;
-
-    // remove all "--" and then remove all "+-" signs that may have appeared during the calculations
-    expressionPiece = replace(expressionPiece, "--", "+"), expressionPiece = replace(expressionPiece, "+-", "-");
 
     // use a loop to keep calculating all factorials
     while (canFind(expressionPiece, '!'))
@@ -605,7 +598,6 @@ real evaluate(string expressionPiece)
 
     // remove all "--" and then remove all "+-" signs that may have appeared during the calculations
     expressionPiece = replace(expressionPiece, "--", "+"), expressionPiece = replace(expressionPiece, "+-", "-");
-
     // calculate all sums and differences with the 'calculateSumsAndDifferences()' function created above
     expressionPiece = calculateSumsAndDifferences(expressionPiece);
 
@@ -614,7 +606,7 @@ real evaluate(string expressionPiece)
         // return it
         return real.nan;
 
-    // replace all "[]" which may have appeared during the calculations
+    // remove all "[]" which may have appeared during the calculations
     expressionPiece = replace(expressionPiece, "[", ""), expressionPiece = replace(expressionPiece, "]", "");
 
     // if the expression is something like "-0.0"
@@ -635,11 +627,10 @@ void main()
     // these variables will hold the result and the value of x
     real result, xValue;
 
-    // ask the user the type the expression
+    // ask the user to type the expression
     writeln("Type in the expression as a function of x: ");
     // read the input
     readf("%s\n", expression);
-
     // ask the user to type the value of x
     writeln("Type in the value of x: ");
     // read the input
@@ -658,9 +649,8 @@ void main()
     expression = replace(expression, " ", ""), expression = replace(expression, "++", "+"), expression = replace(expression, "--", "+");
     // remove all "+-" and "-+"
     expression = replace(expression, "+-", "-"), expression = replace(expression, "-+", "-");
-    // replace the constant of pi and then the constant of Euler, we use a separate function for Euler since it is more difficult than replacing pi
+    // replace the constant of pi and then the Euler's constant, we use a separate function called 'replaceEuler()' for Euler since it's more difficult than replacing pi
     expression = replace(expression, "pi", "3.1415926536"), expression = replaceEuler(expression);
-
     // finally do the magic and evaluate the whole expression with the functions created above
     result = evaluate(expression);
 
@@ -668,7 +658,7 @@ void main()
     if (result is real.nan)
         // print a message to let you know you've mistyped something
         writeln("Error, the expression wasn't typed correctly.");
-    // if the expression was correct
+    // if the result is a Real number
     else
         // print the value, with 10 decimals
         writefln("Result: %.10f", result);
