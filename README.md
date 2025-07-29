@@ -9,11 +9,11 @@ You just need to make sure the expression was typed correctly, these are the rul
 
 1- trigs and logs must be written in lower case, as in log(2.0, 10.0), in which 2.0 is the base, or as in sin(4.5), in which 4.5 is in degrees, not radians.
 
-2- use a . to write decimal numbers, meaning you should write 1.2 and not 1,2.
+2- use a dot to write decimal numbers, meaning you should write 1.2 and not 1,2.
 
 3- powers must be written using the ^ operator, as in 2.0^3.0, which means 2.0 to the power of 3.0.
 
-4- roots must be written using the r operator, as in 8.0r3.0, which means the cubic root of 8.0.
+4- roots must be written using the r operator, as in 8.0r3.0, which means the cube root of 8.0.
 
 5- you can use parentheses as you wish, just make sure you don't forget to open or close a pair of parentheses, as in ((2 + x), which is missing the closing parentheses.
 
