@@ -15,7 +15,7 @@ You just need to make sure the expression was typed correctly, these are the rul
 
 4- roots must be written using the r operator, as in 8.0r3.0, which means the cube root of 8.0.
 
-5- you can use parentheses as you wish, just make sure you don't forget to open or close a pair of parentheses, as in ((2 + x), which is missing the closing parentheses.
+5- you can use parenthesis as you wish, just make sure you don't forget to open or close a pair of parenthesis, as in ((2 + x), which is missing the closing parenthesis.
 
 6- it may work most times if you type values as integers, such as 3, but it is safer to always type them as floats, such as 3.0, just in case.
 
